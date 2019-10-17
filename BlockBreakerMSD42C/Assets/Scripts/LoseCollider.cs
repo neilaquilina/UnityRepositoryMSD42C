@@ -10,5 +10,6 @@ public class LoseCollider : MonoBehaviour
         print(myCollider.gameObject.name);
 
         SceneManager.LoadScene("GameOver");
+        
     }
 }

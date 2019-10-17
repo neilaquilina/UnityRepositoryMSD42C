@@ -14,5 +14,6 @@ public class Paddle : MonoBehaviour
     void Update()
     {
         print(Input.mousePosition.x / Screen.width * 16f);
+        
     }
 }

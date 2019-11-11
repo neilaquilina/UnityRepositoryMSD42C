@@ -6,6 +6,12 @@ public class Block : MonoBehaviour
 {
 
     [SerializeField] AudioClip breakSound;
+    [SerializeField] GameObject blockSparklesVFX;
+
+    [SerializeField] Sprite[] hitSprites;
+
+    [SerializeField] int maxHits;
+    [SerializeField] int currentHits = 0;
 
     Level level;
 
@@ -14,15 +20,43 @@ public class Block : MonoBehaviour
         //find object Level and assign to level
         level = FindObjectOfType<Level>();
 
-        //add 1 to breakableBlocks
-        level.CountBreakableBlocks();
+        if (gameObject.tag == "Breakable")
+        {
+            //add 1 to breakableBlocks
+            level.CountBreakableBlocks();
+        }
+    }
+
+    private void ShowNextHitSprite()
+    {
+        int spriteIndex = currentHits - 1;
+        GetComponent<SpriteRenderer>().sprite = hitSprites[spriteIndex];
+    }
+
+    private void TriggerSparklesVFX()
+    {
+        GameObject particles = Instantiate(blockSparklesVFX, transform.position, transform.rotation);
+        Destroy(particles, 1f);
     }
 
     private void OnCollisionEnter2D(Collision2D coll)
     {
-        AudioSource.PlayClipAtPoint(breakSound, Camera.main.transform.position);
-        FindObjectOfType<GameStatus>().AddToScore();
-        Destroy(gameObject);
-        level.BlockDestroyed();
+        if (gameObject.tag == "Breakable")
+        {
+            currentHits++;
+
+            if (currentHits >= maxHits)
+            {
+                AudioSource.PlayClipAtPoint(breakSound, Camera.main.transform.position);
+                FindObjectOfType<GameStatus>().AddToScore();
+                Destroy(gameObject);
+                TriggerSparklesVFX();
+                level.BlockDestroyed();
+            }
+            else
+            {
+                ShowNextHitSprite();
+            }
+        }
     }
 }
